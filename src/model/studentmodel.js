@@ -6,7 +6,8 @@ const studentschema = new mongoose.Schema({
     name: { type: String, required: true },
     subject: { type: String, required: true },
     marks: { type: Number, required: true },
-    isdeleted: { type: Boolean, default: false }
+    isdeleted: { type: Boolean, default: false },
+    deletedAt :{type:Date}
 })
 
 module.exports = mongoose.model('student', studentschema)
