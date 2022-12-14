@@ -1,5 +1,4 @@
 const studentmodel = require("../model/studentmodel")
-const usermodel = require("../model/usermodel")
 
 const mongoose = require('mongoose')
 const Objectid = mongoose.Types.ObjectId.isValid
@@ -26,9 +25,9 @@ const createstudent = async function (req, res) {
         if (!num.test(marks)) return res.status(400).send({ status: false, message: "please enter only alphabets in marks" })
 
         let getdata = await studentmodel.findOne({ name, subject })
-        console.log(getdata);
+        // console.log(getdata);
         if (getdata) {
-            console.log("inside if");
+            // console.log("inside if");
             let savedata = await studentmodel.findOneAndUpdate(
                 { name, subject },
                 { $set: { marks: marks + getdata.marks } },
@@ -47,8 +46,9 @@ const getstudent = async function (req, res) {
     try {
         if (!Objectid(req.params.userid)) { return res.status(400).send({ status: false, message: "please enter valid userid" }) }
         let getdata = await studentmodel.find({ userid: req.params.userid, isdeleted: false })
-        if (getdata.length == 0) { return res.status(4).send({ status: false, message: "no data found with this userid" }) }
-        return res.status(201).send({ status: true, data: getdata })
+        console.log(getdata);
+        if (getdata.length == 0) { return res.status(404).send({ status: false, message: "no data found with this userid" }) }
+        return res.status(200).send({ status: true, data: getdata })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
@@ -84,6 +84,11 @@ const findstudent = async function (req, res) {
 }
 const updatestudent = async function (req, res) {
     try {
+        if (!Objectid(req.params.studentid)) {
+            return res.status(400).send({ status: false, message: "please enter correct student id" })
+        }
+
+        if (Object.keys(req.body).length == 0) return res.status(400).send({ status: false, message: "please provide data to update student" })
 
         let { name, subject, marks } = req.body
         let filter = {}
@@ -91,14 +96,14 @@ const updatestudent = async function (req, res) {
         if (typeof (name) != "undefined") {
             if (!name) return res.status(400).send({ status: false, message: "please enter name of student" })
             if (!reg.test(name)) return res.status(400).send({ status: false, message: "please enter only alphabets in name" })
-             filter["name"] = name 
+            filter["name"] = name
         }
 
         if (typeof (subject) != "undefined") {
             if (!subject) return res.status(400).send({ status: false, message: "please enter subject of student" })
             if (!reg.test(subject)) return res.status(400).send({ status: false, message: "please enter only alphabets in subject" })
 
-            filter["subject"] = subject 
+            filter["subject"] = subject
         }
         if (typeof (marks) != "undefined") {
             if (!marks) return res.status(400).send({ status: false, message: "please enter subject of student" })
@@ -108,10 +113,11 @@ const updatestudent = async function (req, res) {
         }
 
         let savedata = await studentmodel.findOneAndUpdate(
-            { _id: req.params.studentid ,isdeleted:false},
+            { _id: req.params.studentid, userid: req.params.userid, isdeleted: false },
             { $set: filter },
             { new: true }
         )
+        if (!savedata) return res.status(404).send({ status: true, message: "data not found" })
         return res.status(200).send({ status: true, message: "data has been updated", data: savedata })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
@@ -119,15 +125,16 @@ const updatestudent = async function (req, res) {
 }
 const deletestudent = async function (req, res) {
     try {
-        if(!Objectid(req.params.studentid)){return res.status(400).send({status:false,message:"please enter correct student id"})
+        if (!Objectid(req.params.studentid)) {
+            return res.status(400).send({ status: false, message: "please enter correct student id" })
         }
 
         let savedata = await studentmodel.findOneAndUpdate(
-            { _id: req.params.studentid ,isdeleted:false},
+            { _id: req.params.studentid, userid: req.params.userid, isdeleted: false },
             { $set: { isdeleted: true, deletedAt: Date.now() } },
             { new: true }
         )
-        if(!savedata) return res.status(404).send({ status: true, message: "no data found" })
+        if (!savedata) return res.status(404).send({ status: true, message: "no data found" })
         return res.status(200).send({ status: true, message: "data has been deleted", data: savedata })
 
     } catch (err) {

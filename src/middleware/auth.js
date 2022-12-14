@@ -34,7 +34,6 @@ const authorization = async function (req, res, next) {
         if (!findUseridInDb) {
             return res.status(404).send({ status: false, message: `there is no data with this  ${userid}  id in database` })
         }
-
         if (req.token.id != userid) return res.status(403).send({ status: false, message: "authorization failed,userid and token are not of the same user" })
         next()
 
@@ -44,4 +43,4 @@ const authorization = async function (req, res, next) {
 }
 
 
-module.exports = { authentication,authorization }
+module.exports = { authentication, authorization }
