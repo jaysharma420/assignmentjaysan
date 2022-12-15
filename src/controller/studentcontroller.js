@@ -1,11 +1,12 @@
 const studentmodel = require("../model/studentmodel")
-
 const mongoose = require('mongoose')
 const Objectid = mongoose.Types.ObjectId.isValid
 
-
 let reg = /^[a-zA-Z_ ]{2,50}$/
 let num = /^[0-9]{1,3}$/
+
+// ========================================Create Student==========================================================
+
 const createstudent = async function (req, res) {
     try {
         let data = req.body
@@ -42,6 +43,10 @@ const createstudent = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
+// ==========================================Get Student By UserId===============================================
+
+
 const getstudent = async function (req, res) {
     try {
         if (!Objectid(req.params.userid)) { return res.status(400).send({ status: false, message: "please enter valid userid" }) }
@@ -53,6 +58,10 @@ const getstudent = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
+// ==============================================Find Student=======================================================
+
+
 const findstudent = async function (req, res) {
     try {
         let name = req.query.name
@@ -82,6 +91,10 @@ const findstudent = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
+// =================================================Update Student=================================================
+
+
 const updatestudent = async function (req, res) {
     try {
         if (!Objectid(req.params.studentid)) {
@@ -106,8 +119,8 @@ const updatestudent = async function (req, res) {
             filter["subject"] = subject
         }
         if (typeof (marks) != "undefined") {
-            if (!marks) return res.status(400).send({ status: false, message: "please enter subject of student" })
-            if (!num.test(marks)) return res.status(400).send({ status: false, message: "please enter only alphabets in subject" })
+            if (!marks) return res.status(400).send({ status: false, message: "please enter marks of student" })
+            if (!num.test(marks)) return res.status(400).send({ status: false, message: "please enter only number in marks" })
 
             filter["marks"] = marks
         }
@@ -123,6 +136,10 @@ const updatestudent = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
+// =================================================Delete Student================================================
+
+
 const deletestudent = async function (req, res) {
     try {
         if (!Objectid(req.params.studentid)) {

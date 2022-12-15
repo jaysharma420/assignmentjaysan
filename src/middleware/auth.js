@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const Objectid = mongoose.Types.ObjectId.isValid
 const jwt = require('jsonwebtoken')
 
+// ===========================================Authentication======================================================
 
 const authentication = async function (req, res, next) {
     try {
@@ -21,6 +22,8 @@ const authentication = async function (req, res, next) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
+// ==============================================Authorization======================================================
 
 const authorization = async function (req, res, next) {
 
@@ -42,5 +45,6 @@ const authorization = async function (req, res, next) {
     }
 }
 
-
 module.exports = { authentication, authorization }
+
+// ===============================================================>================================================>
